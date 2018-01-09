@@ -31,7 +31,7 @@ public class InviteUsersController {
     private AuthAPI auth;
 
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.POST, consumes = "test/html")
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<Set<InvitationStatus>> inviteUsers(@RequestBody String[] emails) {
         Set<InvitationStatus> results = new HashSet<>();
 
@@ -48,11 +48,11 @@ public class InviteUsersController {
                     results.add(new InvitationStatus(email, InvitationStatus.SUCCESS));
                 }
             } catch (APIException exception) {
-                System.out.println(exception.getMessage());
+                exception.printStackTrace();
                 results.add(new InvitationStatus(email, InvitationStatus.FAILURE, exception.getMessage()));
 
             } catch (Auth0Exception exception) {
-                System.out.println(exception.getMessage());
+                exception.printStackTrace();
                 results.add(new InvitationStatus(email, InvitationStatus.FAILURE, exception.getMessage()));
             }
         }
