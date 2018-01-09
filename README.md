@@ -13,3 +13,5 @@ A management UI written in Vue.js which enables Auth0 users to be invited and pr
 7. click change password link
 8. redirected to change password hosted page and submits new password
 9. new users can login to the app defined in scope
+
+Using auth0 Java API for Managment and Auth API calls - https://github.com/auth0/auth0-java
