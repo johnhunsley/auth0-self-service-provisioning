@@ -52,7 +52,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .configure(http)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-//                .antMatchers(HttpMethod.POST, "/app/invite").hasRole("SERVICE_PROVIDER")
+                .antMatchers(HttpMethod.POST, "/app/invite").hasRole("SERVICE_PROVIDER")
                 .and()
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

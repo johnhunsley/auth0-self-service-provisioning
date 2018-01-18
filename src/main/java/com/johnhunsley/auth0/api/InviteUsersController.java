@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.UUID;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.Set;
 @RequestMapping("app/invite")
 public class InviteUsersController {
 
+    final static String CONNECTION = "Username-Password-Authentication";
     @Autowired
     private ManagementAPI mgmt;
 
@@ -36,21 +38,20 @@ public class InviteUsersController {
         Set<InvitationStatus> results = new HashSet<>();
 
         for(String email : emails) {
-            User data = new User();
+            User data = new User(CONNECTION);
+            data.setEmail(email);
+            data.setPassword(UUID.randomUUID().toString());
+            //todo - name, roles, meta data - Lymm ID etc...?
             Request<User> mgmtRequest = mgmt.users().create(data);
 
             try {
                 User response = mgmtRequest.execute();
 
                 if(response.getId() != null) {
-                    Request authRequest = auth.resetPassword(email, "Username-Password-Authentication");
+                    Request authRequest = auth.resetPassword(email.trim(), CONNECTION);
                     authRequest.execute();
                     results.add(new InvitationStatus(email, InvitationStatus.SUCCESS));
                 }
-            } catch (APIException exception) {
-                exception.printStackTrace();
-                results.add(new InvitationStatus(email, InvitationStatus.FAILURE, exception.getMessage()));
-
             } catch (Auth0Exception exception) {
                 exception.printStackTrace();
                 results.add(new InvitationStatus(email, InvitationStatus.FAILURE, exception.getMessage()));
