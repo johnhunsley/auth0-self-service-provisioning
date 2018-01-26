@@ -1,4 +1,4 @@
-package com.johnhunsley.auth0.api;
+package com.johnhunsley.auth0.domain;
 
 /**
  * @author John Hunsley

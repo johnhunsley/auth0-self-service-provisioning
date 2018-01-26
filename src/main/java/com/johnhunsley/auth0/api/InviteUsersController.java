@@ -1,18 +1,13 @@
 package com.johnhunsley.auth0.api;
-
-import com.auth0.client.auth.AuthAPI;
-import com.auth0.client.mgmt.ManagementAPI;
-import com.auth0.exception.APIException;
-import com.auth0.exception.Auth0Exception;
-import com.auth0.json.mgmt.users.User;
-import com.auth0.net.Request;
+import com.johnhunsley.auth0.domain.InvitationStatus;
+import com.johnhunsley.auth0.domain.Invitee;
+import com.johnhunsley.auth0.service.InviteUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.UUID;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,39 +20,20 @@ import java.util.Set;
 @RequestMapping("app/invite")
 public class InviteUsersController {
 
-    final static String CONNECTION = "Username-Password-Authentication";
     @Autowired
-    private ManagementAPI mgmt;
-
-    @Autowired
-    private AuthAPI auth;
+    private InviteUsersService inviteUsersService;
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity<Set<InvitationStatus>> inviteUsers(@RequestBody String[] emails) {
-        Set<InvitationStatus> results = new HashSet<>();
+    public ResponseEntity<Set<InvitationStatus>> inviteUsers(@RequestBody List<Invitee> invitations) {
 
-        for(String email : emails) {
-            User data = new User(CONNECTION);
-            data.setEmail(email);
-            data.setPassword(UUID.randomUUID().toString());
-            //todo - name, roles, meta data - Lymm ID etc...?
-            Request<User> mgmtRequest = mgmt.users().create(data);
+        try {
+            Set<InvitationStatus> results = inviteUsersService.inviteUsers(invitations);
+            return new ResponseEntity<>(results, HttpStatus.OK);
 
-            try {
-                User response = mgmtRequest.execute();
-
-                if(response.getId() != null) {
-                    Request authRequest = auth.resetPassword(email.trim(), CONNECTION);
-                    authRequest.execute();
-                    results.add(new InvitationStatus(email, InvitationStatus.SUCCESS));
-                }
-            } catch (Auth0Exception exception) {
-                exception.printStackTrace();
-                results.add(new InvitationStatus(email, InvitationStatus.FAILURE, exception.getMessage()));
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 }
