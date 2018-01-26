@@ -63,4 +63,29 @@ public class Invitee implements Serializable {
     public void setRole(String role) {
         this.role = role;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Invitee)) return false;
+
+        Invitee invitee = (Invitee) o;
+
+        if (getFirstName() != null ? !getFirstName().equals(invitee.getFirstName()) : invitee.getFirstName() != null)
+            return false;
+        if (getLastName() != null ? !getLastName().equals(invitee.getLastName()) : invitee.getLastName() != null)
+            return false;
+        if (getEmail() != null ? !getEmail().equals(invitee.getEmail()) : invitee.getEmail() != null) return false;
+        return !(getMemberId() != null ? !getMemberId().equals(invitee.getMemberId()) : invitee.getMemberId() != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getFirstName() != null ? getFirstName().hashCode() : 0;
+        result = 31 * result + (getLastName() != null ? getLastName().hashCode() : 0);
+        result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
+        result = 31 * result + (getMemberId() != null ? getMemberId().hashCode() : 0);
+        return result;
+    }
 }
