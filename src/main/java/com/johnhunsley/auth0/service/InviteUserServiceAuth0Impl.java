@@ -23,7 +23,7 @@ import java.util.*;
 public class InviteUserServiceAuth0Impl implements InviteUsersService {
 
     @Value(value = "${auth0.connection}")
-    private String connection = "Username-Password-Authentication";
+    private String connection;
 
     @Value(value = "${auth0.default.user.role}")
     private String defaultRole;
