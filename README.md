@@ -1,7 +1,7 @@
 # auth0-self-service-provisioning
 [![Circle CI](https://circleci.com/gh/johnhunsley/auth0-self-service-provisioning.svg?style=svg)](https://circleci.com/gh/johnhunsley/auth0-self-service-provisioning)
 
-A management UI written in Vue.js which enables Auth0 users to be invited and provision their own passwords
+A management API which enables Auth0 users to be invited and provision their own passwords
 
 1. User with Admin role logs into the vue.js app.
 2. Adds email addresses
