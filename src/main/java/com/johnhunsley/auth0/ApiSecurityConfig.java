@@ -36,9 +36,6 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
     @Value(value = "${auth0.domain}")
     private String domain;
 
-    @Value(value = "${auth0.mgmt.api.token}")
-    private String token;
-
     @Value(value = "${auth0.client.id}")
     private String clientId;
 
@@ -52,7 +49,7 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
                 .configure(http)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS).permitAll()
-                .antMatchers(HttpMethod.POST, "/app/invite").hasRole("SERVICE_PROVIDER")
+//                .antMatchers(HttpMethod.POST, "/app/invite").hasRole("SERVICE_PROVIDER")
                 .and()
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -100,10 +97,6 @@ public class ApiSecurityConfig extends WebSecurityConfigurerAdapter {
         web.httpFirewall(allowUrlEncodedSlashHttpFirewall());
     }
 
-    @Bean
-    public ManagementAPI mgmtConfigure() {
-        return new ManagementAPI(domain, token);
-    }
 
     @Bean
     public AuthAPI authConfigure() {

@@ -3,12 +3,14 @@ package com.johnhunsley.auth0.service;
 import com.auth0.client.auth.AuthAPI;
 import com.auth0.client.mgmt.ManagementAPI;
 import com.auth0.exception.Auth0Exception;
+import com.auth0.json.auth.TokenHolder;
 import com.auth0.json.mgmt.users.User;
 import com.auth0.net.Request;
 import com.johnhunsley.auth0.domain.InvitationStatus;
 import com.johnhunsley.auth0.domain.Invitee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -28,11 +30,17 @@ public class InviteUserServiceAuth0Impl implements InviteUsersService {
     @Value(value = "${auth0.default.user.role}")
     private String defaultRole;
 
-    @Autowired
-    private ManagementAPI mgmt;
+    @Value(value = "${auth0.domain}")
+    private String domain;
+
+    @Value(value = "${auth0.apiAudience}")
+    private String apiAudience;
 
     @Autowired
     private AuthAPI auth;
+
+    @Autowired
+    private ManagementAPI mgmt;
 
     @Override
     public Set<InvitationStatus> inviteUsers(List<Invitee> invitations) throws Exception {
@@ -64,7 +72,7 @@ public class InviteUserServiceAuth0Impl implements InviteUsersService {
                 if(response.getId() != null) {
                     Request authRequest = auth.resetPassword(email.trim(), connection);
                     authRequest.execute();
-                    results.add(new InvitationStatus(email, InvitationStatus.SUCCESS));
+                    results.add(new InvitationStatus(email, InvitationStatus.SUCCESS, "successfully invited"));
                 }
 
             } catch (Auth0Exception exception) {
@@ -74,5 +82,11 @@ public class InviteUserServiceAuth0Impl implements InviteUsersService {
         }
 
         return results;
+    }
+
+    @Bean
+    private ManagementAPI createManagementAPIClient() throws Auth0Exception {
+        TokenHolder execute = auth.requestToken(apiAudience).execute();
+        return new ManagementAPI(domain, execute.getAccessToken());
     }
 }
